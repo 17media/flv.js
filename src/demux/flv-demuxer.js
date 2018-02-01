@@ -1044,6 +1044,30 @@ class FLVDemuxer {
             length += data.byteLength;
 
             offset += lengthSize + naluSize;
+
+            if (unitType === 6 && data[4] === 102) {
+                // {naluSize} 0x66, 0x05, {size}, {uuid}, 0x01, {data}, 0x80
+                let i = 6;
+                let seiPayloadSize = 0;
+                while(data[i] >= 255) {
+                    seiPayloadSize += data[i++];
+                }
+                seiPayloadSize += data[i++];
+                const uuid = data.slice(i, i + 16);
+                i += 16;
+                const seiFormat = data[i++];
+                const seiPayload = data.slice(i, data.length - 1);
+                const seiMessage = seiPayload.reduce((acc, sei) => {
+                    return acc + String.fromCharCode(sei);
+                }, '');
+
+                console.log({
+                    uuid,
+                    seiFormat,
+                    seiPayloadSize,
+                    seiMessage: JSON.parse(decodeURIComponent(escape(seiMessage))),
+                });
+            }
         }
 
         if (units.length) {
