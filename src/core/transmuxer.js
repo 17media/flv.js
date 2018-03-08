@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import EventEmitter from 'events';
+import EventEmitter from 'eventemitter3';
 import Log from '../utils/logger.js';
 import LoggingControl from '../utils/logging-control.js';
 import TransmuxingController from './transmuxing-controller.js';
